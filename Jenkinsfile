@@ -2,31 +2,40 @@ pipeline {
     agent any
 
     tools {
-        jdk 'JDK17'
-        maven 'MAVEN3'
+        jdk 'JDK'          // Make sure you configured JDK in Jenkins
+        maven 'Maven'      // Make sure you configured Maven in Jenkins
     }
 
     stages {
+
+        stage('Checkout SCM') {
+            steps {
+                git branch: 'main', url: 'https://github.com/AfrahSulthanaH-03022003/EmployeeManagementSystem.git'
+            }
+        }
+
         stage('Build') {
             steps {
-                echo 'Running Maven Build...'
-                bat 'mvn clean package -DskipTests'
+                echo 'Building with Maven...'
+                bat 'mvn clean package'
             }
         }
-        stage('Archive') {
+
+        stage('Test') {
             steps {
-                echo 'Archiving Artifacts...'
-                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+                echo 'Running tests...'
+                bat 'mvn test'
             }
         }
+
     }
 
     post {
         success {
-            echo '✅ Build Success!'
+            echo 'Pipeline completed successfully!'
         }
         failure {
-            echo '❌ Build Failed!'
+            echo 'Pipeline failed. Check logs!'
         }
     }
 }
